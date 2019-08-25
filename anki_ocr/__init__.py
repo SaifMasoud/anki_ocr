@@ -1,0 +1,2 @@
+name = "anki_ocr"
+
