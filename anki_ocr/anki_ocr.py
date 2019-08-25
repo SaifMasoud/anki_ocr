@@ -7,7 +7,6 @@ import genanki
 import os
 
 img_file_extensions = ['.png', '.jpg']
-deck_id = random.randrange(1 << 30, 1 << 31)
 
 
 def main():
@@ -32,6 +31,7 @@ def main():
         q_a_text_pairs.append(q_a_text_pair)
 
     # Initialize deck and add notes
+    deck_id = random.randrange(1 << 30, 1 << 31)
     my_deck = genanki.Deck(deck_id, deck_name)
     for q_text, a_text in q_a_text_pairs:
         add_note_anki_deck(my_deck, q_text, a_text)
@@ -73,8 +73,9 @@ def image_to_text(filename):
 
 def add_note_anki_deck(deck, q_text, a_text):
     # Basic anki note model
+    model_id = random.randrange(1 << 30, 1 << 31)
     my_model = genanki.Model(
-        1607392319,
+        model_id,
         'Simple Model',
         fields=[
             {'name': 'Question'},
