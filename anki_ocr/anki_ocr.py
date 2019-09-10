@@ -10,14 +10,8 @@ img_file_extensions = ['.png', '.jpg']
 
 
 def main():
-
-    # Verify correct number of arguments
-    try:
-        img_dir_name = sys.argv[1]
-        deck_name = sys.argv[2]
-    except IndexError:
-        raise ValueError('Usage: python anki_ocr_py img_directory deck_name')
-
+    
+    img_dir_name, deck_name = get_arguments()
     # Get path for images folder
     img_path = Path(img_dir_name)
 
@@ -25,19 +19,35 @@ def main():
     q_a_pairs = pair_images(img_path)
 
     # convert Q, A image pair to text(through OCR)
-    q_a_text_pairs = []
-    for q, a in q_a_pairs:
-        q_a_text_pair = image_to_text(q), image_to_text(a)
-        q_a_text_pairs.append(q_a_text_pair)
+    q_a_text_pairs = convert_q_a_pairs(q_a_pairs)
 
     # Initialize deck and add notes
     deck_id = random.randrange(1 << 30, 1 << 31)
     my_deck = genanki.Deck(deck_id, deck_name)
-    for q_text, a_text in q_a_text_pairs:
-        add_note_anki_deck(my_deck, q_text, a_text)
+    add_tuples_anki_deck(my_deck, q_a_text_pairs)
 
     # Package deck to output file
     genanki.Package(my_deck).write_to_file(f'{deck_name}.apkg')
+
+def get_arguments():
+    # Verify Correct number of arguments and return them
+    try:
+        img_dir_name = sys.argv[1]
+        deck_name = sys.argv[2]
+    except IndexError:
+        raise ValueError('Usage: python anki_ocr_py img_directory deck_name')
+    return img_dir_name, deck_name
+
+def convert_q_a_pairs(q_a_pairs):
+    q_a_text_pairs = []
+    for q, a in q_a_pairs:
+        q_a_text_pair = image_to_text(q), image_to_text(a)
+        q_a_text_pairs.append(q_a_text_pair)
+    return q_a_text_pairs
+
+def add_tuples_anki_deck(anki_deck, tuples_list):
+    for q_text, a_text in tuples_list:
+        add_note_anki_deck(q_text, a_text)
 
 
 def pair_images(img_path):
