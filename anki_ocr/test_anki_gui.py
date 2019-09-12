@@ -40,14 +40,16 @@ class Window(QWidget):
         self.img_field.setText(f'{img_directory}')
 
     def on_run_btn(self):
+        # Check if fields are filled
         if (self.img_field.text()) and (self.deck_name_field.text()):
             print('fields filled, conversion running...')
             img_directory = self.img_field.text()
             deck_name = self.deck_name_field.text()
+            # Check if OCR is enabled
+            ocr_option = False
             if self.ocr_check_box.isChecked():
-                anki_ocr.main(img_directory, deck_name, ocr=True)
-            else:
-                anki_ocr.main(img_directory, deck_name, ocr=False)
+                ocr_option = True
+            anki_ocr.main(img_directory, deck_name, ocr=ocr_option)
 
 if __name__ == '__main__':
 
