@@ -9,29 +9,31 @@ import os
 img_file_extensions = ['.png', '.jpg']
 
 
-def main(img_dir_name=None, deck_name=None, ocr=True):
+def main(img_dir_name=None, deck_name=None, ocr=False):
     
-    if img_dir_name==None:
+    if img_dir_name==None: # In other words, if run from command-line
         img_dir_name, deck_name = get_arguments()
     
     # Get path for images folder
-    img_path = Path(img_dir_name)
+    img_path_object = Path(img_dir_name)
 
     # Group Directory to Q,A pairs
-    q_a_pairs = pair_images(img_path)
+    q_a_pairs = pair_images(img_path_object)
 
 
     # Initialize deck and add notes
     deck_id = random.randrange(1 << 30, 1 << 31)
-    my_deck = genanki.Deck(deck_id, deck_name)
     media_files = []
+    my_deck = genanki.Deck(deck_id, deck_name)
 
     # convert Q, A image pair to text(through OCR)
     if ocr:
         q_a_text_pairs = convert_q_a_pairs(q_a_pairs)
         add_tuples_anki_deck(my_deck, q_a_text_pairs)
+        print(my_deck.notes)
     
     if not ocr:
+        # We have to store all media files in a list to add them to our anki package.
         for q_path, a_path in q_a_pairs:
             media_files.append(str(q_path.absolute()))
             media_files.append(str(a_path.absolute()))
@@ -68,10 +70,10 @@ def add_tuples_anki_deck(anki_deck, tuples_list, media=False):
             add_img_note_anki_deck(anki_deck, q_file, a_file)
 
 
-def pair_images(img_path):
+def pair_images(img_path_object):
     # Make Sure all files in directory are images (JPEG/PNG)
     img_list = []
-    for img in img_path.glob('*'):
+    for img in img_path_object.glob('*'):
         if img.suffix not in img_file_extensions:
             raise ValueError(
                 'All files in image directory must be PNG/JPEG format')
@@ -119,6 +121,7 @@ def add_note_anki_deck(deck, q_text, a_text):
 
     my_note = genanki.Note(model=my_model, fields=[q_text, a_text])
     deck.add_note(my_note)
+    print(f'just added note with q_text: {q_text}, a_text: {a_text}')
 
 def add_img_note_anki_deck(deck, q_file, a_file):
     model_id = random.randrange(1 << 30, 1 << 31)
@@ -138,6 +141,7 @@ def add_img_note_anki_deck(deck, q_file, a_file):
   ])
     my_note = genanki.Note(model=my_model, fields=[f"<img src={q_file.name}>", f"<img src={a_file.name}>"])
     deck.add_note(my_note)
+    print(f'Just added note with q_img: {q_file.name}, a_img: {a_file.name}')
 
 
 if __name__ == '__main__':
