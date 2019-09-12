@@ -2,19 +2,21 @@ import sys
 from PyQt5.QtWidgets import *
 import anki_ocr
 
+
 class Window(QWidget):
     def __init__(self):
         super().__init__()
-        self.title="anki_ocr_gui"
+        self.title = "anki_ocr_gui"
         self.initUI()
-    
+
     def initUI(self):
         # Creating our widgets
         self.deck_field_label = QLabel('Enter Deck Name')
         self.deck_name_field = QLineEdit()
         self.img_dir_btn = QPushButton('Choose img directory')
         self.img_field = QLineEdit()
-        self.ocr_check_box = QCheckBox('Convert images to text with OCR (Good Hand-Writing required)')
+        self.ocr_check_box = QCheckBox(
+            'Convert images to text with OCR (Good Hand-Writing required)')
         self.run_btn = QPushButton('Convert to anki package')
 
         # Gathering the widgets in a layout object
@@ -34,9 +36,9 @@ class Window(QWidget):
         self.setLayout(self.layout)
         self.show()
 
-
     def on_img_dir_btn(self):
-        img_directory = QFileDialog.getExistingDirectory(None, "Select image folder", '/home')
+        img_directory = QFileDialog.getExistingDirectory(
+            None, "Select image folder", '/home')
         self.img_field.setText(f'{img_directory}')
 
     def on_run_btn(self):
@@ -50,6 +52,7 @@ class Window(QWidget):
             if self.ocr_check_box.isChecked():
                 ocr_option = True
             anki_ocr.main(img_directory, deck_name, ocr=ocr_option)
+
 
 if __name__ == '__main__':
 

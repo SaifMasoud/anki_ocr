@@ -10,16 +10,15 @@ img_file_extensions = ['.png', '.jpg']
 
 
 def main(img_dir_name=None, deck_name=None, ocr=False):
-    
-    if img_dir_name==None: # In other words, if run from command-line
+
+    if img_dir_name == None:  # In other words, if run from command-line
         img_dir_name, deck_name = get_arguments()
-    
+
     # Get path for images folder
     img_path_object = Path(img_dir_name)
 
     # Group Directory to Q,A pairs
     q_a_pairs = pair_images(img_path_object)
-
 
     # Initialize deck and add notes
     deck_id = random.randrange(1 << 30, 1 << 31)
@@ -30,8 +29,7 @@ def main(img_dir_name=None, deck_name=None, ocr=False):
     if ocr:
         q_a_text_pairs = convert_q_a_pairs(q_a_pairs)
         add_tuples_anki_deck(my_deck, q_a_text_pairs)
-        print(my_deck.notes)
-    
+
     if not ocr:
         # We have to store all media files in a list to add them to our anki package.
         for q_path, a_path in q_a_pairs:
@@ -45,6 +43,7 @@ def main(img_dir_name=None, deck_name=None, ocr=False):
     my_package.write_to_file(f'{deck_name}.apkg')
     print(f'conversion complete, packaged to {deck_name}.apkg')
 
+
 def get_arguments():
     # Verify Correct number of arguments and return them
     try:
@@ -54,12 +53,14 @@ def get_arguments():
         raise ValueError('Usage: python anki_ocr_py img_directory deck_name')
     return img_dir_name, deck_name
 
+
 def convert_q_a_pairs(q_a_pairs):
     q_a_text_pairs = []
     for q, a in q_a_pairs:
         q_a_text_pair = image_to_text(q), image_to_text(a)
         q_a_text_pairs.append(q_a_text_pair)
     return q_a_text_pairs
+
 
 def add_tuples_anki_deck(anki_deck, tuples_list, media=False):
     if not media:
@@ -123,22 +124,23 @@ def add_note_anki_deck(deck, q_text, a_text):
     deck.add_note(my_note)
     print(f'just added note with q_text: {q_text}, a_text: {a_text}')
 
+
 def add_img_note_anki_deck(deck, q_file, a_file):
     model_id = random.randrange(1 << 30, 1 << 31)
     my_model = genanki.Model(
         model_id,
-    'Simple Model with Media',
-  fields=[
-    {'name': 'QuestionImage'},
-    {'name': 'AnswerImage'},
-  ],
-  templates=[
-    {
-      'name': 'Card 1',
-      'qfmt': '{{QuestionImage}}',
-      'afmt': '{{FrontSide}}<hr id="answer">{{AnswerImage}}',
-    },
-  ])
+        'Simple Model with Media',
+        fields=[
+            {'name': 'QuestionImage'},
+            {'name': 'AnswerImage'},
+        ],
+        templates=[
+            {
+                'name': 'Card 1',
+                'qfmt': '{{QuestionImage}}',
+                'afmt': '{{FrontSide}}<hr id="answer">{{AnswerImage}}',
+            },
+        ])
     my_note = genanki.Note(model=my_model, fields=[f"<img src={q_file.name}>", f"<img src={a_file.name}>"])
     deck.add_note(my_note)
     print(f'Just added note with q_img: {q_file.name}, a_img: {a_file.name}')
