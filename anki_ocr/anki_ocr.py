@@ -9,25 +9,39 @@ import os
 img_file_extensions = ['.png', '.jpg']
 
 
-def main():
+def main(img_dir_name=None, deck_name=None, ocr=True):
     
-    img_dir_name, deck_name = get_arguments()
+    if img_dir_name==None:
+        img_dir_name, deck_name = get_arguments()
+    
     # Get path for images folder
     img_path = Path(img_dir_name)
 
     # Group Directory to Q,A pairs
     q_a_pairs = pair_images(img_path)
 
-    # convert Q, A image pair to text(through OCR)
-    q_a_text_pairs = convert_q_a_pairs(q_a_pairs)
 
     # Initialize deck and add notes
     deck_id = random.randrange(1 << 30, 1 << 31)
     my_deck = genanki.Deck(deck_id, deck_name)
-    add_tuples_anki_deck(my_deck, q_a_text_pairs)
+    media_files = []
+
+    # convert Q, A image pair to text(through OCR)
+    if ocr:
+        q_a_text_pairs = convert_q_a_pairs(q_a_pairs)
+        add_tuples_anki_deck(my_deck, q_a_text_pairs)
+    
+    if not ocr:
+        for q_path, a_path in q_a_pairs:
+            media_files.append(str(q_path.absolute()))
+            media_files.append(str(a_path.absolute()))
+        add_tuples_anki_deck(my_deck, q_a_pairs, media=True)
 
     # Package deck to output file
-    genanki.Package(my_deck).write_to_file(f'{deck_name}.apkg')
+    my_package = genanki.Package(my_deck)
+    my_package.media_files = media_files
+    my_package.write_to_file(f'{deck_name}.apkg')
+    print(f'conversion complete, packaged to {deck_name}.apkg')
 
 def get_arguments():
     # Verify Correct number of arguments and return them
@@ -45,9 +59,13 @@ def convert_q_a_pairs(q_a_pairs):
         q_a_text_pairs.append(q_a_text_pair)
     return q_a_text_pairs
 
-def add_tuples_anki_deck(anki_deck, tuples_list):
-    for q_text, a_text in tuples_list:
-        add_note_anki_deck(q_text, a_text)
+def add_tuples_anki_deck(anki_deck, tuples_list, media=False):
+    if not media:
+        for q_text, a_text in tuples_list:
+            add_note_anki_deck(anki_deck, q_text, a_text)
+    if media:
+        for q_file, a_file in tuples_list:
+            add_img_note_anki_deck(anki_deck, q_file, a_file)
 
 
 def pair_images(img_path):
@@ -100,6 +118,25 @@ def add_note_anki_deck(deck, q_text, a_text):
         ])
 
     my_note = genanki.Note(model=my_model, fields=[q_text, a_text])
+    deck.add_note(my_note)
+
+def add_img_note_anki_deck(deck, q_file, a_file):
+    model_id = random.randrange(1 << 30, 1 << 31)
+    my_model = genanki.Model(
+        model_id,
+    'Simple Model with Media',
+  fields=[
+    {'name': 'QuestionImage'},
+    {'name': 'AnswerImage'},
+  ],
+  templates=[
+    {
+      'name': 'Card 1',
+      'qfmt': '{{QuestionImage}}',
+      'afmt': '{{FrontSide}}<hr id="answer">{{AnswerImage}}',
+    },
+  ])
+    my_note = genanki.Note(model=my_model, fields=[f"<img src={q_file.name}>", f"<img src={a_file.name}>"])
     deck.add_note(my_note)
 
 
