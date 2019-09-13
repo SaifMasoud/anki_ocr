@@ -10,28 +10,27 @@ img_file_extensions = ['.png', '.jpg']
 
 
 def main(img_dir_name=None, deck_name=None, ocr=False):
-
-    if img_dir_name == None:  # In other words, if run from command-line
+    if len(sys.argv) > 1:  # In other words, if arguments included from command-line
         img_dir_name, deck_name = get_arguments()
 
-    # Get path for images folder
+    # Get path object for images folder
     img_path_object = Path(img_dir_name)
 
-    # Group Directory to Q,A pairs
+    # Group images to Q,A pairs
     q_a_pairs = pair_images(img_path_object)
 
-    # Initialize deck and add notes
+    # Initialize deck
     deck_id = random.randrange(1 << 30, 1 << 31)
     media_files = []
     my_deck = genanki.Deck(deck_id, deck_name)
 
-    # convert Q, A image pair to text(through OCR)
+    # convert Q, A image pair to text(through OCR), and add to deck
     if ocr:
         q_a_text_pairs = convert_q_a_pairs(q_a_pairs)
         add_tuples_anki_deck(my_deck, q_a_text_pairs)
 
     if not ocr:
-        # We have to store all media files in a list to add them to our anki package.
+        # We have to store all media files in a list to add to our package.
         for q_path, a_path in q_a_pairs:
             media_files.append(str(q_path.absolute()))
             media_files.append(str(a_path.absolute()))
@@ -143,7 +142,7 @@ def add_img_note_anki_deck(deck, q_file, a_file):
         ])
     my_note = genanki.Note(model=my_model, fields=[f"<img src={q_file.name}>", f"<img src={a_file.name}>"])
     deck.add_note(my_note)
-    print(f'Just added note with q_img: {q_file.name}, a_img: {a_file.name}')
+    print(f'Added note with q_img: {q_file.name}, a_img: {a_file.name}')
 
 
 if __name__ == '__main__':
