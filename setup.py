@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="anki_ocr",
-    version="0.2",
+    version="0.3",
     author="madelesi",
     author_email="saifemasoud@gmail.com",
     description="Converts physical flashcards to digital anki flashcards",
