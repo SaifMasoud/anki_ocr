@@ -55,7 +55,7 @@ def parse_arguments():
     parser.add_argument('deck_name',
                         help='The name you want for the output package.')
     parser.add_argument('--ocr', default=False,
-                        help='Convert the images to text through OCR.')
+                        help='Convert the images to text through OCR. (Good Handwriting required)')
     return parser.parse_args()
 
 
