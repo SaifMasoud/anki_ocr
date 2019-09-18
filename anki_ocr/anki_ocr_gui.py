@@ -1,4 +1,5 @@
 import sys
+import os
 from PyQt5.QtWidgets import *
 import anki_ocr
 
@@ -18,6 +19,7 @@ class Window(QWidget):
         self.ocr_check_box = QCheckBox(
             'Convert images to text with OCR (Good Hand-Writing required)')
         self.run_btn = QPushButton('Convert to anki package')
+        self.cwd_label = QLabel(os.getcwd())
 
         # Gathering the widgets in a layout object
         self.layout = QVBoxLayout()
@@ -27,6 +29,8 @@ class Window(QWidget):
         self.layout.addWidget(self.img_field)
         self.layout.addWidget(self.ocr_check_box)
         self.layout.addWidget(self.run_btn)
+        self.layout.addWidget(self.cwd_label)
+
 
         # Connecting the buttons to their functions
         self.img_dir_btn.clicked.connect(self.on_img_dir_btn)
