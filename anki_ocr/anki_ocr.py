@@ -4,8 +4,6 @@ import argparse
 import random
 from pathlib import Path
 import genanki
-import pytesseract
-from PIL import Image
 
 
 img_file_extensions = ['.png', '.jpg']
@@ -30,6 +28,11 @@ def main(img_dir=None, deck_name=None, ocr=False):
 
     # convert Q, A image pair to text(through OCR)
     if ocr:
+        try: 
+            import pytesseract
+            from PIL import Image
+        except ImportError:
+            raise Exception('To use OCR you need to install pytesseract & Pillow:\n pip install pytesseract pillow')
         q_a_text_pairs = convert_q_a_pairs(q_a_pairs)
         add_tuples_anki_deck(my_deck, q_a_text_pairs)
 
@@ -54,7 +57,7 @@ def parse_arguments():
                         help='images directory with questions & answers.')
     parser.add_argument('deck_name',
                         help='The name you want for the output package.')
-    parser.add_argument('--ocr', default=False,
+    parser.add_argument('--ocr', default=False, action='store_true',
                         help='Convert the images to text through OCR. (Good Handwriting required)')
     return parser.parse_args()
 

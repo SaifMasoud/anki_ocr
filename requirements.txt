@@ -1,8 +1,6 @@
 cached-property==1.5.1
 frozendict==1.2
 genanki==0.7.0
-Pillow==6.1.0
 pkg-resources==0.0.0
 pystache==0.5.4
-pytesseract==0.3.0
 PyYAML==5.1.2
