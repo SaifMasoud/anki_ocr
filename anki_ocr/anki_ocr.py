@@ -1,21 +1,24 @@
-from pathlib import Path
+import os
 import sys
+import argparse
+import random
+from pathlib import Path
+import genanki
 import pytesseract
 from PIL import Image
-import random
-import genanki
-import os
+
 
 img_file_extensions = ['.png', '.jpg']
 
 
-def main(img_dir_name=None, deck_name=None, ocr=False):
+def main(img_dir=None, deck_name=None, ocr=False):
 
-    if img_dir_name == None:  # In other words, if run from command-line
-        img_dir_name, deck_name = get_arguments()
+    if img_dir == None:  # In other words, if run from command-line
+        args = parse_arguments()
+        img_dir, deck_name, ocr = args.img_dir, args.deck_name, args.ocr
 
     # Get path for images folder
-    img_path_object = Path(img_dir_name)
+    img_path_object = Path(img_dir)
 
     # Group Directory to Q,A pairs
     q_a_pairs = pair_images(img_path_object)
@@ -44,14 +47,16 @@ def main(img_dir_name=None, deck_name=None, ocr=False):
     print(f'conversion complete, packaged to {deck_name}.apkg')
 
 
-def get_arguments():
-    # Verify Correct number of arguments and return them
-    try:
-        img_dir_name = sys.argv[1]
-        deck_name = sys.argv[2]
-    except IndexError:
-        raise ValueError('Usage: python anki_ocr_py img_directory deck_name')
-    return img_dir_name, deck_name
+def parse_arguments():
+    parser = argparse.ArgumentParser(
+        description='convert images to anki flashcards.')
+    parser.add_argument('img_dir',
+                        help='images directory with questions & answers.')
+    parser.add_argument('deck_name',
+                        help='The name you want for the output package.')
+    parser.add_argument('--ocr', default=False,
+                        help='Convert the images to text through OCR.')
+    return parser.parse_args()
 
 
 def convert_q_a_pairs(q_a_pairs):
