@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="anki_ocr",
-    version="0.1",
+    version="0.2",
     author="madelesi",
     author_email="saifemasoud@gmail.com",
     description="Converts physical flashcards to digital anki flashcards",
@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/madelesi/anki_ocr",
     packages=setuptools.find_packages(),
-    install_requires=['genanki', 'pytesseract', 'Pillow'],
+    install_requires=['genanki'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
