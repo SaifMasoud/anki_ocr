@@ -28,8 +28,8 @@ def main(img_dir=None, deck_name=None, ocr=False):
 
     # convert Q, A image pair to text(through OCR)
     if ocr:
-            q_a_text_pairs = convert_q_a_pairs(q_a_pairs)
-            add_tuples_anki_deck(my_deck, q_a_text_pairs)
+        q_a_text_pairs = convert_q_a_pairs(q_a_pairs)
+        add_tuples_anki_deck(my_deck, q_a_text_pairs)
 
     if not ocr:
         # We have to store all media files in a list to add them to our anki package.
@@ -107,7 +107,8 @@ def image_to_text(filename):
         text = pytesseract.image_to_string(Image.open(filename))
         return text
     except ImportError:
-        raise Exception('To use OCR you need to install pytesseract & Pillow:\n pip install pytesseract pillow')
+        raise Exception(
+            'To use OCR you need to install pytesseract & Pillow:\n pip install pytesseract pillow')
 
 
 def add_note_anki_deck(deck, q_text, a_text):
