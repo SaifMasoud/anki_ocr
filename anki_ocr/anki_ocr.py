@@ -42,7 +42,7 @@ def main(img_dir=None, deck_name=None, ocr=False):
     my_package = genanki.Package(my_deck)
     my_package.media_files = media_files
     my_package.write_to_file(f'{deck_name}.apkg')
-    print(f'conversion complete, packaged to {deck_name}.apkg')
+    print(f'conversion complete, packaged to {os.getcwd()}/{deck_name}.apkg')
 
 
 def parse_arguments():
