@@ -1,3 +1,4 @@
+"""Converts an image directory into an anki Deck in a .apkg file. """
 import os
 import sys
 import argparse
@@ -10,7 +11,13 @@ img_file_extensions = ['.png', '.jpg']
 
 
 def main(img_dir=None, deck_name=None, ocr=False):
+    """ Converts img_dir to an anki deck
 
+    Args:
+        img_dir: A directory with images forming question/answer pairs
+        deck_name: Name of the outputted anki .apkg file.
+        ocr: Convert image to text through OCR.
+    """
     if img_dir == None:  # In other words, if run from command-line
         args = parse_arguments()
         img_dir, deck_name, ocr = args.img_dir, args.deck_name, args.ocr
@@ -46,6 +53,11 @@ def main(img_dir=None, deck_name=None, ocr=False):
 
 
 def parse_arguments():
+    """ Parses CLI arguments
+
+    Returns:
+        Tuple: main script arguments
+    """
     parser = argparse.ArgumentParser(
         description='convert images to anki flashcards.')
     parser.add_argument('img_dir',
@@ -58,6 +70,14 @@ def parse_arguments():
 
 
 def convert_q_a_pairs(q_a_pairs):
+    """Converts pairs of images to pairs of text
+
+    Args:
+        q_a_pairs (PosixPath tuple list):
+
+    Returns:
+        List of tuples.
+    """
     q_a_text_pairs = []
     for q, a in q_a_pairs:
         q_a_text_pair = image_to_text(q), image_to_text(a)
@@ -66,6 +86,13 @@ def convert_q_a_pairs(q_a_pairs):
 
 
 def add_tuples_anki_deck(anki_deck, tuples_list, media=False):
+    """Adds q&a tuple pairs to anki deck
+
+    Args:
+        anki_deck (Deck object):
+        tuples_list (List):
+        media (bool):
+    """
     if not media:
         for q_text, a_text in tuples_list:
             add_note_anki_deck(anki_deck, q_text, a_text)
@@ -75,6 +102,17 @@ def add_tuples_anki_deck(anki_deck, tuples_list, media=False):
 
 
 def pair_images(img_path_object):
+    """Pairs images in a given PosixPath directory
+
+    Args:
+        img_path_object(pathlib Path)
+
+    Returns:
+        List of tuples(pairs) of pathlib Paths
+
+    Raises:
+        ValueError if number of images isn't even.
+    """
     # Make Sure all files in directory are images (JPEG/PNG)
     img_list = []
     for img in img_path_object.glob('*'):
@@ -94,17 +132,37 @@ def pair_images(img_path_object):
 
 
 def list_to_tuples(list_to_pair, pair_length):
+    """Pairs elements of list into tuples of pair_length
+
+    Args:
+        list_to_pair (List)
+        pair_length (int)
+
+    Returns:
+        List of tuples
+    """
     # Create N copies of the same iterator
     it = [iter(list_to_pair)] * pair_length
     # Unpack the copies of the iterator, and pass them as parameters to zip
     return list(zip(*it))
 
 
-def image_to_text(filename):
+def image_to_text(filepath):
+    """Converts an image file into text
+
+    Args:
+        filepath (string): filepath of the image
+
+    Returns:
+        String: Text of the image
+
+    Raises:
+        Exception: If OCR requirements aren't available
+    """
     try:
         import pytesseract
         from PIL import Image
-        text = pytesseract.image_to_string(Image.open(filename))
+        text = pytesseract.image_to_string(Image.open(filepath))
         return text
     except ImportError:
         raise Exception(
@@ -112,6 +170,13 @@ def image_to_text(filename):
 
 
 def add_note_anki_deck(deck, q_text, a_text):
+    """Adds a note to a genanki deck object.
+
+    Args:
+        deck (genanki Deck)
+        q_text (string)
+        a_text (string)
+    """
     # Basic anki note model
     model_id = random.randrange(1 << 30, 1 << 31)
     my_model = genanki.Model(
@@ -135,6 +200,13 @@ def add_note_anki_deck(deck, q_text, a_text):
 
 
 def add_img_note_anki_deck(deck, q_file, a_file):
+    """adds an image note to a genanki Deck
+
+    Args:
+        deck (genanki Deck)
+        q_file (string): Path of question image
+        a_file (string): Path of answer image
+    """
     model_id = random.randrange(1 << 30, 1 << 31)
     my_model = genanki.Model(
         model_id,
