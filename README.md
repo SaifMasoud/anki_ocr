@@ -25,8 +25,17 @@ This will output an Anki deck package output_deck_name.apkg. This package can be
 ## Contributing
 This project is beginner friendly. The entire module is a small single file, and the only new package you might have to deal with is genanki just to see some other ways to generate notes.
 
-To install an editable version (updates after every change), run:
-```pip install -e .```
+Clone the project & you probably want a virtual environment
+```bash
+git clone https://github.com/madelesi/anki_ocr.git
+cd anki_ocr
+python3 -m venv venv_anki_ocr
+```
+Then install an editable version (updates after every save)
+```bash
+pip install -e .
+```
+
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
