@@ -30,6 +30,7 @@ Clone the project & you probably want a virtual environment
 git clone https://github.com/madelesi/anki_ocr.git
 cd anki_ocr
 python3 -m venv venv_anki_ocr
+source venv_anki_ocr/bin/activate
 ```
 Then install an editable version (updates after every save)
 ```bash
