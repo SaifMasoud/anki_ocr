@@ -24,6 +24,7 @@ def main(img_dir=None, deck_name=None, ocr=False):
 
     # Get path for images folder
     img_path_object = Path(img_dir)
+    print(f"img_dir={img_path_object.absolute()}\ndeck={deck_name}\nocr={ocr}\n")
 
     # Group Directory to Q,A pairs
     q_a_pairs = pair_images(img_path_object)
@@ -31,25 +32,30 @@ def main(img_dir=None, deck_name=None, ocr=False):
     # Initialize deck and add notes
     deck_id = random.randrange(1 << 30, 1 << 31)
     media_files = []
-    my_deck = genanki.Deck(deck_id, deck_name)
+    deck = genanki.Deck(deck_id, deck_name)
 
     # convert Q, A image pair to text(through OCR)
     if ocr:
         q_a_text_pairs = convert_q_a_pairs(q_a_pairs)
-        add_tuples_anki_deck(my_deck, q_a_text_pairs)
+        add_tuples_anki_deck(deck, q_a_text_pairs)
 
     if not ocr:
         # We have to store all media files in a list to add them to our anki package.
         for q_path, a_path in q_a_pairs:
-            media_files.append(str(q_path.absolute()))
-            media_files.append(str(a_path.absolute()))
-        add_tuples_anki_deck(my_deck, q_a_pairs, media=True)
+            media_files.append(str(q_path))
+            media_files.append(str(a_path))
+        add_tuples_anki_deck(deck, q_a_pairs, media=True)
 
-    # Package deck to output file
-    my_package = genanki.Package(my_deck)
-    my_package.media_files = media_files
-    my_package.write_to_file(f'{deck_name}.apkg')
-    print(f'conversion complete, packaged to {deck_name}.apkg')
+    # save deck to output file
+    save_anki_deck(deck, media_files)
+
+def save_anki_deck(deck : genanki.Deck, media_files : list):
+    pkg = genanki.Package(deck)
+    pkg.media_files = media_files
+    pkg.write_to_file(f'{deck.name}.apkg')
+    print(f'conversion complete, packaged to {deck.name}.apkg')
+
+
 
 
 def parse_arguments():
@@ -115,7 +121,7 @@ def pair_images(img_path_object):
     """
     # Make Sure all files in directory are images (JPEG/PNG)
     img_list = []
-    for img in img_path_object.glob('*'):
+    for img in img_path_object.iterdir():
         if img.suffix not in img_file_extensions:
             raise ValueError(
                 'All files in image directory must be PNG/JPEG format')
@@ -196,7 +202,7 @@ def add_note_anki_deck(deck, q_text, a_text):
 
     my_note = genanki.Note(model=my_model, fields=[q_text, a_text])
     deck.add_note(my_note)
-    print(f'just added note with q_text: {q_text}, a_text: {a_text}')
+    print(f'Added note: q_text: {q_text}, a_text: {a_text}')
 
 
 def add_img_note_anki_deck(deck, q_file, a_file):
@@ -224,7 +230,7 @@ def add_img_note_anki_deck(deck, q_file, a_file):
         ])
     my_note = genanki.Note(model=my_model, fields=[f"<img src={q_file.name}>", f"<img src={a_file.name}>"])
     deck.add_note(my_note)
-    print(f'Just added note with q_img: {q_file.name}, a_img: {a_file.name}')
+    print(f'-Added note with q_img: {q_file.name}, a_img: {a_file.name}')
 
 
 if __name__ == '__main__':
