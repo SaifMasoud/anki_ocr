@@ -7,7 +7,8 @@ from pathlib import Path
 import genanki
 
 
-img_file_extensions = ['.png', '.jpg']
+img_file_extensions = [".jpg", ".png", ".gif", ".tiff", ".svg", ".tif", ".jpeg", ".mp3", ".ogg", ".wav", ".avi", ".ogv", ".mpg", ".mpeg", ".mov", ".mp4", ".mkv",
+                       ".ogx", ".ogv", ".oga", ".flv", ".swf", ".flac", ".webp", ".m4a"]
 
 
 def main(img_dir=None, deck_name=None, ocr=False):
@@ -24,7 +25,8 @@ def main(img_dir=None, deck_name=None, ocr=False):
 
     # Get path for images folder
     img_path_object = Path(img_dir)
-    print(f"img_dir={img_path_object.absolute()}\ndeck={deck_name}\nocr={ocr}\n")
+    print(
+        f"img_dir={img_path_object.absolute()}\ndeck={deck_name}\nocr={ocr}\n")
 
     # Group Directory to Q,A pairs
     q_a_pairs = pair_images(img_path_object)
@@ -49,13 +51,12 @@ def main(img_dir=None, deck_name=None, ocr=False):
     # save deck to output file
     save_anki_deck(deck, media_files)
 
-def save_anki_deck(deck : genanki.Deck, media_files : list):
+
+def save_anki_deck(deck: genanki.Deck, media_files: list):
     pkg = genanki.Package(deck)
     pkg.media_files = media_files
     pkg.write_to_file(f'{deck.name}.apkg')
     print(f'conversion complete, packaged to {deck.name}.apkg')
-
-
 
 
 def parse_arguments():
@@ -228,7 +229,8 @@ def add_img_note_anki_deck(deck, q_file, a_file):
                 'afmt': '{{FrontSide}}<hr id="answer">{{AnswerImage}}',
             },
         ])
-    my_note = genanki.Note(model=my_model, fields=[f"<img src={q_file.name}>", f"<img src={a_file.name}>"])
+    my_note = genanki.Note(model=my_model, fields=[
+                           f"<img src={q_file.name}>", f"<img src={a_file.name}>"])
     deck.add_note(my_note)
     print(f'-Added note with q_img: {q_file.name}, a_img: {a_file.name}')
 
