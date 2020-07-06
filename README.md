@@ -1,3 +1,4 @@
+***Note: For a quicker experience, check out [img-to-anki](https://madelesi.github.io/img-to-anki-TEST/) where you can generate anki decks from your mobile browser without any downloads. It lacks polishing but gets the job done.***
 
 # anki_ocr
 
